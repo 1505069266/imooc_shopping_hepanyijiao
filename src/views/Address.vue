@@ -1,44 +1,11 @@
 <template>
     <div>
-      <header class="header">
-        <symbol id="icon-cart" viewBox="0 0 38 32">
-          <title>cart</title>
-          <path class="path1" d="M37.759 0h-4.133c-0.733 0.004-1.337 0.549-1.434 1.255l-0.546 4.342c-0.081 0.484-0.496 0.849-0.997 0.849-0.005 0-0.009-0-0.014-0h-27.604c-0.003 0-0.007-0-0.011-0-1.674 0-3.031 1.357-3.031 3.031 0 0.34 0.056 0.666 0.159 0.971l2.52 8.062c0.385 1.194 1.486 2.043 2.785 2.043 0.126 0 0.25-0.008 0.372-0.023l22.983 0.002c0.515 0.131 0.626 0.768 0.626 1.283 0.005 0.044 0.009 0.095 0.009 0.146 0 0.501-0.294 0.933-0.718 1.134l-22.439 0.003c-0.354 0-0.642 0.287-0.642 0.642s0.287 0.642 0.642 0.642h22.745l0.131-0.071c0.919-0.392 1.551-1.287 1.551-2.33 0-0.058-0.002-0.116-0.006-0.173 0.021-0.108 0.033-0.24 0.033-0.376 0-1.072-0.732-1.973-1.724-2.23l-23.357-0.004c-0.063 0.008-0.135 0.013-0.209 0.013-0.719 0-1.332-0.455-1.566-1.093l-2.53-8.095c-0.048-0.154-0.076-0.332-0.076-0.515 0-0.973 0.782-1.764 1.752-1.778h27.657c1.159-0.004 2.112-0.883 2.232-2.011l0.547-4.345c0.010-0.083 0.078-0.147 0.161-0.152l4.133-0c0.354 0 0.642-0.287 0.642-0.642s-0.287-0.642-0.642-0.642z"></path>
-          <path class="path2" d="M31.323 9.69c-0.022-0.003-0.048-0.004-0.074-0.004-0.328 0-0.598 0.248-0.633 0.567l-0.809 7.268c-0.003 0.022-0.004 0.048-0.004 0.074 0 0.328 0.248 0.598 0.567 0.633l0.074 0c0.001 0 0.003 0 0.004 0 0.327 0 0.596-0.246 0.632-0.563l0.809-7.268c0.003-0.022 0.004-0.048 0.004-0.074 0-0.328-0.248-0.598-0.567-0.633z"></path>
-          <path class="path3" d="M27.514 25.594c-1.769 0-3.203 1.434-3.203 3.203s1.434 3.203 3.203 3.203c1.769 0 3.203-1.434 3.203-3.203s-1.434-3.203-3.203-3.203zM27.514 30.717c-1.060 0-1.92-0.86-1.92-1.92s0.86-1.92 1.92-1.92c1.060 0 1.92 0.86 1.92 1.92s-0.86 1.92-1.92 1.92z"></path>
-          <path class="path4" d="M9.599 25.594c-1.769 0-3.203 1.434-3.203 3.203s1.434 3.203 3.203 3.203c1.769 0 3.203-1.434 3.203-3.203s-1.434-3.203-3.203-3.203zM9.599 30.717c-1.060 0-1.92-0.86-1.92-1.92s0.86-1.92 1.92-1.92c1.060 0 1.92 0.86 1.92 1.92s-0.86 1.92-1.92 1.92z"></path>
-        </symbol>
-        <div class="navbar">
-          <div class="navbar-left-container">
-            <a href="/">
-              <img class="navbar-brand-logo" src="static/logo.png"></a>
-          </div>
-          <div class="navbar-right-container" style="display: flex;">
-            <div class="navbar-menu-container">
-              <!--<a href="/" class="navbar-link">我的账户</a>-->
-              <span class="navbar-link"></span>
-              <a href="javascript:void(0)" class="navbar-link">Login</a>
-              <a href="javascript:void(0)" class="navbar-link">Logout</a>
-              <div class="navbar-cart-container">
-                <span class="navbar-cart-count"></span>
-                <a class="navbar-link navbar-cart-link" href="/#/cart">
-                  <svg class="navbar-cart-logo">
-                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-cart"></use>
-                  </svg>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
-      <div class="nav-breadcrumb-wrap">
-        <div class="container">
-          <nav class="nav-breadcrumb">
-            <a href="/">Home</a>
-            <span>Address</span>
-          </nav>
-        </div>
-      </div>
+      <nav-header>
+          
+      </nav-header>
+     <nav-bread>
+       <span slot="bread">Address</span>
+     </nav-bread>
       <div class="checkout-page">
         <svg style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
           <defs>
@@ -95,37 +62,21 @@
             <div class="addr-list-wrap">
               <div class="addr-list">
                 <ul>
-                  <li>
+                  <li v-for="(item,index) in addressListFilter" :key="index" :class="{'check': checkIndex==index}" @click="selectAddress(index,item.addressId)">
                     <dl>
-                      <dt>Jack</dt>
-                      <dd class="address">海淀区朝阳公园</dd>
-                      <dd class="tel">18610000000</dd>
+                      <dt>{{item.userName}}</dt>
+                      <dd class="address">{{item.streetName}}</dd>
+                      <dd class="tel">{{item.tel}}</dd>
                     </dl>
                     <div class="addr-opration addr-del">
-                      <a href="javascript:;" class="addr-del-btn">
+                      <a href="javascript:;" class="addr-del-btn" @click="delAddressConfirm(item.addressId)">
                         <svg class="icon icon-del"><use xlink:href="#icon-del"></use></svg>
                       </a>
                     </div>
                     <div class="addr-opration addr-set-default">
-                      <a href="javascript:;" class="addr-set-default-btn"><i>Set default</i></a>
+                      <a href="javascript:;" class="addr-set-default-btn" v-if="!item.isDefault" @click="setDefaultAddress(item.addressId)"><i>Set default</i></a>
                     </div>
-                    <div class="addr-opration addr-default">Default address</div>
-                  </li>
-                  <li>
-                    <dl>
-                      <dt>Tom</dt>
-                      <dd class="address">海淀区中关村</dd>
-                      <dd class="tel">18510000000</dd>
-                    </dl>
-                    <div class="addr-opration addr-del">
-                      <a href="javascript:;" class="addr-del-btn">
-                        <svg class="icon icon-del"><use xlink:href="#icon-del"></use></svg>
-                      </a>
-                    </div>
-                    <div class="addr-opration addr-set-default">
-                      <a href="javascript:;" class="addr-set-default-btn"><i>Set default</i></a>
-                    </div>
-                    <div class="addr-opration addr-default">Default address</div>
+                    <div class="addr-opration addr-default" v-if="item.isDefault">Default address</div>
                   </li>
                   <li class="addr-new">
                     <div class="add-new-inner">
@@ -139,7 +90,7 @@
               </div>
 
               <div class="shipping-addr-more">
-                <a class="addr-more-btn up-down-btn" href="javascript:;">
+                <a class="addr-more-btn up-down-btn" href="javascript:;" @click="expand" :class="{'open':limit>3}">
                   more
                   <i class="i-up-down">
                     <i class="i-up-down-l"></i>
@@ -167,49 +118,116 @@
               </div>
             </div>
             <div class="next-btn-wrap">
-              <a class="btn btn--m btn--red" href="#">Next</a>
+              <router-link class="btn btn--m btn--red" tag="button"  :to="{path:'orderConfirm',query:{'addressId':selectAddressId}}">Next</router-link>
             </div>
           </div>
         </div>
       </div>
-      <footer class="footer">
-        <div class="footer__wrap">
-          <div class="footer__secondary">
-            <div class="footer__inner">
-              <div class="footer__region">
-                <span>Region</span>
-                <select class="footer__region__select">
-                  <option value="en-US">USA</option>
-                  <option value="zh-CN">China</option>
-                  <option value="in">India</option>
-                </select>
-              </div>
-              <div class="footer__secondary__nav">
-                <span>Copyright © 2017 IMooc All Rights Reserved.</span>
-                <a href="http://us.lemall.com/us/aboutUs.html">
-                  About Us
-                </a>
-                <a href="http://us.lemall.com/us/termsofUse.html">
-                  Terms &amp; Conditions
-                </a>
-                <a href="http://us.lemall.com/us/privacyPolicy.html">
-                  Privacy Policy
-                </a>
-              </div>
-            </div>
-          </div>
+      <Modal :mdShow="mdShow" @close="modalHide">
+        <span slot="header">提示</span>
+        <p slot="msg">您是否确认要删除此地址？</p>
+        <div slot="btnGroup">
+          <a href="javasript:;" class="btn btn--m" @click="delAddress">确认</a>
+          <a href="javasript:;" class="btn btn--m" @click="mdShow=false">取消删除</a>
         </div>
-      </footer>
+      </Modal>
+      <nav-footer></nav-footer>
     </div>
 </template>
 <style>
 </style>
 <script>
+import NavHeader from '@/components/Header'
+import NavFooter from '@/components/Footer'
+import NavBread from '@/components/Bread'
+import axios from 'axios'
+import Modal from './../components/Modal.vue'
   export default{
       data(){
           return{
-
+            addressList: [],
+            checkIndex: 0,
+            selectAddressId: this.defaultAddress,
+            limit:3,
+            mdShow: false,
+            addressId: ''
           }
+      },
+      components: {
+        NavHeader,
+        NavFooter,
+        NavBread,
+        Modal
+      },
+      created(){
+        this.init()
+        setTimeout(()=>{
+          this.selectAddressId = this.defaultAddress
+        },1000)
+      },
+      methods:{
+        modalHide(){
+          this.mdShow = false
+        },
+        init(){
+          axios.get('/users/addressList').then(response=>{
+            let res = response.data
+            this.addressList = res.result
+            console.log(this.addressList);
+          })
+        },
+        selectAddress(ind,id){
+          this.checkIndex = ind;
+          this.selectAddressId = id
+        },
+        expand(){
+          if(this.limit == this.addressList.length){
+            this.limit = 3
+          }else{
+            this.limit = this.addressList.length
+          }
+        },
+        setDefaultAddress(id){
+          axios.post("/users/setDefaultAddress",{
+            addressId:id
+          }).then(response=>{
+            let res = response.data
+            if(res.status == "0"){
+              console.log(res.result);
+              this.init()
+            }
+          })
+        },
+        delAddressConfirm(id){
+          this.mdShow = true
+          this.addressId = id
+        },
+        delAddress(){
+          axios.post('/users/delAddress',{
+            addressId:this.addressId
+          }).then(response=>{
+            let res = response.data
+            if(res.status=="0"){
+              this.mdShow = false
+              console.log("success");
+              this.init()
+            }
+          })
+        }
+      },
+      computed: {
+        addressListFilter(){
+          return this.addressList.slice(0,this.limit)
+        },
+        defaultAddress(){
+          let addressId = '';
+          this.addressList.map(item=>{
+            if(item.isDefault == true){
+              addressId = item.addressId
+            }
+          })
+          return addressId
+        }
       }
   }
 </script>

@@ -121,4 +121,173 @@ router.post('/cart/del',(req,res,next)=>{
   })
 })
 
+
+//购物车修改
+router.post("/cartEdit",(req,res,next)=>{
+  let userId = req.cookies.userId,
+       productId = req.body.productId, 
+       productNum = req.body.productNum,
+       checked = req.body.checked;
+
+  console.log(userId);
+  console.log(productId);
+  console.log(productNum);
+  console.log(checked);
+  User.update({"userId":userId, "cartList.productId": productId},{
+    "cartList.$.productNum": productNum,
+    "cartList.$.checked": checked
+  },(err,doc)=>{
+    if(err){
+      res.json({
+        status: '1',
+        msg: err.message,
+        result: ''
+      })
+    }else{
+      res.json({
+        status: '0',
+        msg:'',
+        result: "success"
+      })
+    }
+  })
+
+})
+
+//购物车点击全选反选
+router.post('/editCheckAll',(req,res,next)=>{
+  let userId = req.cookies.userId,
+       checkAll = req.body.checkAll?'1':'0';
+      console.log(req.body.checkAll);
+  console.log(checkAll);
+  User.findOne({userId:userId},(err,user)=>{
+    if(err){
+      res.json({
+        status: '1',
+        msg: err.message,
+        result: ''
+      })
+    }else{
+      if(user){
+        user.cartList.forEach(item=>{
+          item.checked = checkAll
+        })
+        user.save((err1,doc)=>{
+          if(err1){
+            res.json({
+              status:'1',
+              msg: err.message,
+              result: ''
+            })
+          }else{
+            res.json({
+              status:'0',
+              msg: '',
+              result: 'success'
+            })
+          }
+        })
+      }
+    
+    }
+  })
+})
+
+//查询用户地址接口
+router.get('/addressList',(req,res,next)=>{
+  let userId = req.cookies.userId
+  User.findOne({userId: userId},(err,doc)=>{
+    if(err){
+      res.json({
+        status: '1',
+        msg: err.message,
+        result: ''
+      })
+    }else{
+      res.json({
+        status: '0',
+        msg: '',
+        result: doc.addressList
+      })
+    }
+  })
+})
+
+
+//设置默认地址
+router.post("/setDefaultAddress",(req,res,next)=>{
+  let userId = req.cookies.userId,
+       addressId = req.body.addressId;
+  if(!addressId){
+    res.json({
+      status: '1003',
+      msg: 'address is null',
+      result: ''
+    })
+  }else{
+    User.findOne({userId:userId},(err,doc)=>{
+      if(err){
+        res.json({
+          status: '1',
+          msg: err.message,
+          result: ''
+        })
+      }else{
+        let addressList = doc.addressList;
+        addressList.map(item=>{
+          if(item.addressId == addressId){
+            item.isDefault = true
+          }else{
+            item.isDefault = false
+          }
+        })
+        doc.save((err1,doc1)=>{
+          if(err1){
+            res.json({
+              status: '1',
+              msg: err.message,
+              result: ''
+            })
+          }else{
+            res.json({
+              status: '0',
+              msg: '',
+              result: 'success'
+            })
+          }
+        })
+      }
+    })
+  }
+})
+
+//删除地址接口
+router.post("/delAddress",(req,res,next)=>{
+  let userId = req.cookies.userId,
+        addressId = req.body.addressId;
+  User.update({
+    userId: userId
+  },{
+    $pull: {
+      "addressList": {
+        "addressId": addressId
+      }
+    }
+  },(err,doc)=>{
+    if(err){
+      res.json({
+        status: '1',
+        msg: err.message,
+        result: ''
+      })
+    }else{
+      res.json({
+        status: '0',
+        msg: '',
+        result: 'success'
+      })
+    }
+  })
+})
+
 module.exports = router
