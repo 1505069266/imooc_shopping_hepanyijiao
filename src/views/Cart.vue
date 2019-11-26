@@ -193,6 +193,7 @@ export default{
           let res = response.data
           if(res.status=='0'){
             this.mdShow = false
+            console.log(res);
             this.init()
           }
         })

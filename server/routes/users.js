@@ -2,6 +2,7 @@ let express= require('express')
 let router = express.Router()
 let mongoose = require('mongoose')
 let User = require('../models/users')
+require('./../util/util')
 
 
 router.post('/login',(req,res,next)=>{
@@ -9,7 +10,6 @@ router.post('/login',(req,res,next)=>{
     userName: req.body.userName,
     userPwd: req.body.userPwd
   }
-  console.log(param);
   User.findOne(param,(err,doc)=>{
     if(err){
       res.json({
@@ -17,7 +17,6 @@ router.post('/login',(req,res,next)=>{
         msg: err.message
       })
     }else{
-      console.log(doc);
       if(doc){
         res.cookie("userId",doc.userId,{
           path:'/',
@@ -79,7 +78,6 @@ router.get("/checkLogin", (req,res,next)=>{
 //获取当前用户的购物车列表
 router.get('/cartList',(req,res,next)=>{
   let userId = req.cookies.userId
-  console.log(userId);
   User.findOne({userId: userId},(err,doc)=>{
     if(err){
       res.json({
@@ -102,8 +100,6 @@ router.get('/cartList',(req,res,next)=>{
 //购物车商品删除
 router.post('/cart/del',(req,res,next)=>{
   let userId = req.cookies.userId,productId = req.body.productId;
-  console.log(userId);
-  console.log(productId);
   User.update({userId:userId},{$pull:{"cartList":{"productId":productId}}},(err,doc)=>{
     if(err){
       res.json({
@@ -128,11 +124,6 @@ router.post("/cartEdit",(req,res,next)=>{
        productId = req.body.productId, 
        productNum = req.body.productNum,
        checked = req.body.checked;
-
-  console.log(userId);
-  console.log(productId);
-  console.log(productNum);
-  console.log(checked);
   User.update({"userId":userId, "cartList.productId": productId},{
     "cartList.$.productNum": productNum,
     "cartList.$.checked": checked
@@ -158,8 +149,6 @@ router.post("/cartEdit",(req,res,next)=>{
 router.post('/editCheckAll',(req,res,next)=>{
   let userId = req.cookies.userId,
        checkAll = req.body.checkAll?'1':'0';
-      console.log(req.body.checkAll);
-  console.log(checkAll);
   User.findOne({userId:userId},(err,user)=>{
     if(err){
       res.json({
@@ -288,6 +277,146 @@ router.post("/delAddress",(req,res,next)=>{
       })
     }
   })
+})
+
+
+//确认订单
+router.post("/payMent",(req,res,next)=>{
+  let userId = req.cookies.userId,
+      addressId = req.body.addressId,
+      orderTotal = req.body.ordertotal;
+  User.findOne({userId:userId},(err,doc)=>{
+    if(err){
+      res.json({
+        status: '1',
+        msg:err.message,
+        result:''
+      })
+    }else{
+      let address='',
+          goodsList=[];
+      //获取当前用户得地址信息
+      doc.addressList.forEach((item)=>{
+        if(addressId.addressId == item.addressId){
+          address = item
+        }
+      })
+      
+      //获取用户购物车得购买商品
+      doc.cartList.map(item=>{
+        if(item.checked=="1"){
+          goodsList.push(item)
+        }
+      })
+
+      //生成orderId
+      let r1 = Math.floor(Math.random() *10)
+      let r2 = Math.floor(Math.random() *10)
+
+      let sysDate= new Date().Format('yyyyMMddhhmmss')
+      let createDate = new Date().Format('yyyy-MM-dd hh:mm:ss')
+      let platform = '622'
+      let orderId = platform + r1 + sysDate + r2
+
+      let order = {
+        orderId:orderId,
+        orderTotal: orderTotal,
+        addressInfo: address,
+        goodsList: goodsList,
+        orderStatus: '1',
+        createDate: createDate
+      }
+      doc.orderList.push(order)
+      doc.save((err1,doc1)=>{
+        if(err1){
+          res.json({
+            status: '1',
+            msg:err1.message,
+            result:''
+          })
+        }else{
+          res.json({
+            status: '0',
+            msg:'',
+            result: {
+              orderId: order.orderId,
+              orderTotal: order.orderTotal
+            }
+          })
+        }
+      })
+    }
+  })
+})
+
+//根据订单id查询订单
+router.get('/orderDetail',(req,res,next)=>{
+  let userId = req.cookies.userId,
+      orderId = req.param("orderId");
+  
+  User.findOne({userId:userId},(err,userInfo)=>{
+    if(err){
+      res.json({
+        status: '1',
+        msg: err.message,
+        result:''
+      })
+    }else{
+      let orderList = userInfo.orderList
+      if(orderList.length > 0){
+        let orderTotal = 0;
+        orderList.map(item=>{
+          if(item.orderId == orderId){
+            orderTotal = item.orderTotal
+          }
+        })
+
+        res.json({
+          status:'0',
+          msg:'',
+          result:{
+            orderId: orderId,
+            orderTotal: orderTotal
+          }
+        })
+      }else{
+        res.json({
+          status: '120001',
+          msg: '无此订单',
+          result:''
+        })
+      }
+      
+    }
+  })
+})
+
+
+//查询购物车商品数量
+router.get("/getCartCount",(req,res,next)=>{
+  if(req.cookies && req.cookies.userId){
+    let userId = req.cookies.userId
+    User.findOne({userId:userId},(err,doc)=>{
+      if(err){
+        res.json({
+          status: '1',
+          msg: err.message,
+          result:''
+        })
+      }else{
+        let cartList = doc.cartList
+        let cartCount = 0;
+        cartList.map(item=>{
+          cartCount += parseInt(item.productNum)
+        })
+        res.json({
+          status: '0',
+          msg:'',
+          result:cartCount
+        })
+      }
+    })
+  }
 })
 
 module.exports = router

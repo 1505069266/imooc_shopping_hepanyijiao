@@ -163,7 +163,7 @@ import Modal from './../components/Modal.vue'
         this.init()
         setTimeout(()=>{
           this.selectAddressId = this.defaultAddress
-        },1000)
+        },500)
       },
       methods:{
         modalHide(){
